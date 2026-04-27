@@ -57,6 +57,167 @@ Empty Nose Syndrome (ENS) is a rare, debilitating condition affecting patients a
 
 ---
 
+## Workflow Diagrams
+
+### End-to-End System Flow
+
+```mermaid
+flowchart TD
+    Patient(["👤 Patient"])
+    Doctor(["🩺 Doctor"])
+
+    subgraph Web ["Next.js Web App — Vercel"]
+        CheckIn["Daily Check-in\n7 ENS Questions"]
+        Chat["AI Follow-up Chat\nClaude / GPT-4 / Groq"]
+        AriaUI["Aria Call Panel\nInitiate / Monitor Call"]
+        DocDash["Doctor Dashboard\nBody Map · Gauges · Charts"]
+        ClinicalAI["Clinical AI Chat\nClaude Analysis"]
+        PDFExport["PDF Report Export\njsPDF 3-page Report"]
+    end
+
+    subgraph Flask ["Flask — Aria Voice Agent :5001"]
+        CallInit["POST /api/call\nCreate Retell Call"]
+        Webhook["POST /webhook/retell\nReceive Transcript"]
+        Analyze["Claude AI\nScore Transcript → JSON"]
+    end
+
+    subgraph Retell ["Retell AI"]
+        LiveCall["Live Phone Call\nAria speaks with Patient"]
+        Transcript["Call Transcript\nReal-time STT"]
+    end
+
+    subgraph FastAPI ["FastAPI — ENS Engine :8000"]
+        Intake["POST /agent-intake\nIngest Scores"]
+        MLModel["ML Model\nscikit-learn Prediction"]
+        DB[("PostgreSQL\nPatient Records")]
+        History["GET /patients/:id/history\nScore History"]
+    end
+
+    subgraph MCP ["MCP Server"]
+        MCPTools["Claude Tool Integration\nStructured Data Access"]
+    end
+
+    Patient -->|"Opens app"| CheckIn
+    CheckIn -->|"Answers submitted"| Chat
+    Chat -->|"Scores extracted"| Intake
+
+    Patient -->|"Receives call"| LiveCall
+    Doctor -->|"Triggers call"| AriaUI
+    AriaUI -->|"POST /api/call"| CallInit
+    CallInit -->|"Create call"| LiveCall
+    LiveCall -->|"Call ends"| Transcript
+    Transcript -->|"Webhook payload"| Webhook
+    Webhook -->|"Parse transcript"| Analyze
+    Analyze -->|"7 clinical scores"| Intake
+
+    Intake --> MLModel
+    MLModel -->|"ENS severity"| DB
+    Intake --> DB
+
+    Doctor -->|"Opens dashboard"| DocDash
+    DB -->|"Patient history"| History
+    History -->|"30-day trends"| DocDash
+    DocDash --> ClinicalAI
+    DocDash --> PDFExport
+    ClinicalAI <-->|"Tool calls"| MCPTools
+```
+
+---
+
+### Patient Journey
+
+```mermaid
+sequenceDiagram
+    actor P as Patient
+    participant UI as Next.js UI
+    participant Chat as AI Chat (Claude/Groq)
+    participant API as FastAPI :8000
+    participant DB as PostgreSQL
+
+    P->>UI: Opens app, selects Patient role
+    UI->>P: Shows 7 ENS symptom questions
+
+    loop Daily Check-in
+        P->>UI: Answers each question (3 options)
+        UI->>UI: Calculates scores (0/3/5 per question)
+    end
+
+    UI->>Chat: Sends scores + context
+    Chat->>P: Asks contextual follow-up questions
+    P->>Chat: Responds in natural language
+    Chat->>P: AI analysis + emotional support
+
+    UI->>API: POST /agent-intake (scores JSON)
+    API->>DB: Store patient record
+    DB-->>UI: Confirm saved
+
+    UI->>P: Shows 30-day calendar
+    Note over UI,P: Green = stable · Yellow = drift · Red = escalation
+```
+
+---
+
+### Aria Voice Call Pipeline
+
+```mermaid
+sequenceDiagram
+    actor D as Doctor / System
+    participant Web as Next.js :3000
+    participant Flask as Flask :5001
+    participant Retell as Retell AI
+    actor Pt as Patient Phone
+    participant Claude as Claude AI
+    participant FastAPI as FastAPI :8000
+    participant DB as PostgreSQL
+
+    D->>Web: Clicks "Call Patient" + phone number
+    Web->>Flask: POST /api/call {phone_number}
+    Flask->>Retell: Create call (agent_id, from, to)
+    Retell->>Pt: Dials patient phone
+    Pt->>Retell: Answers — Aria asks ENS questions
+    Retell->>Pt: Real-time voice conversation
+    Pt->>Retell: Responds about symptoms
+
+    Note over Retell,Pt: Call ends (patient hangs up or completes)
+
+    Retell->>Flask: POST /webhook/retell {transcript}
+    Flask->>Claude: Analyse transcript → extract 7 scores
+    Claude-->>Flask: JSON {air_sensation, nasal_dryness, burning,\nsuffocation, anxiety, humidity, sleep}
+    Flask->>FastAPI: POST /agent-intake {patient_id, scores}
+    FastAPI->>DB: Store scored record
+    FastAPI-->>Flask: 200 OK
+    Flask-->>Web: Call complete
+    Web-->>D: Score tiles + transcript visible
+```
+
+---
+
+### Doctor Dashboard Flow
+
+```mermaid
+flowchart LR
+    Login["Doctor Signs In"] --> Dash["Doctor Dashboard"]
+
+    Dash --> BodyMap["Interactive Body Map\n7 ENS Hotspot Zones"]
+    Dash --> Gauges["Score Gauges\n0–10 per dimension"]
+    Dash --> Charts["Trend Charts\n30-day line + radar"]
+    Dash --> AiChat["Clinical AI Chat"]
+    Dash --> PDF["PDF Export"]
+
+    BodyMap -->|"Click zone"| ZoneDetail["Zone Detail\nScore · Description · History"]
+    Gauges -->|"Red threshold"| Alert["⚠️ Escalation Alert"]
+
+    AiChat -->|"Doctor asks question"| Claude["Claude claude-sonnet-4-6"]
+    Claude -->|"Tool call"| MCP["MCP Server\nFetch patient data"]
+    MCP -->|"Structured data"| Claude
+    Claude -->|"Clinical response"| AiChat
+
+    PDF -->|"Generate"| Report["3-Page Clinical Report\n① Score Overview\n② Trend Analysis\n③ AI Recommendations"]
+    Report -->|"Download"| File["saarthi_report.pdf"]
+```
+
+---
+
 ## Features
 
 ### Patient Side
