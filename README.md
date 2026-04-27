@@ -1,13 +1,21 @@
-# SAARTHI — ENS Clinical Intelligence Platform
+<div align="center">
+  <img src="assets/banner.svg" alt="SAARTHI Banner" width="100%"/>
+</div>
 
-> **S**ymptom **A**nalysis **A**nd **R**eal-**T**ime **H**ealth **I**ntelligence  
-> AI-powered daily monitoring and clinical decision support for Empty Nose Syndrome (ENS)
+<div align="center">
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-saarthi--hackrare.vercel.app-blue?style=for-the-badge)](https://saarthi-hackrare.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0-green?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-teal?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+</div>
+
+# SAARTHI — ENS Clinical Intelligence Platform
+
+> **S**ymptom **A**nalysis **A**nd **R**eal-**T**ime **H**ealth **I**ntelligence  
+> AI-powered daily monitoring and clinical decision support for Empty Nose Syndrome (ENS)
 
 ---
 
@@ -25,6 +33,22 @@ Empty Nose Syndrome (ENS) is a rare, debilitating condition affecting patients a
 |-------|------|
 | Any email | Select **Patient** to use the check-in & chat UI |
 | Any email | Select **Doctor** to access the full clinical dashboard |
+
+---
+
+## Demo
+
+### Patient Check-in & AI Chat
+![Patient check-in flow — daily 7-question ENS assessment with AI follow-up chat](assets/demo-patient.gif)
+
+### Doctor Dashboard — Body Map & Clinical AI
+![Doctor dashboard — interactive ENS body map, score gauges, trend charts, clinical AI chat](assets/demo-doctor.gif)
+
+> **To record your own demo GIFs:**
+> 1. Start the app locally: `cd web && npm run dev`
+> 2. Use [Screen Studio](https://screen.studio), [Kap](https://getkap.co) (macOS), or [LICEcap](https://www.cockos.com/licecap/) to record
+> 3. Export as GIF and save to `assets/demo-patient.gif` and `assets/demo-doctor.gif`
+> 4. `git add assets/ && git commit -m "add demo GIFs" && git push`
 
 ---
 
