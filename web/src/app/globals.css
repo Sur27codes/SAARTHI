@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* Hide Next.js dev badge */
+nextjs-portal {
+  display: none !important;
+}
+
+* {
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #f0f4f8;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT / PDF STYLES  —  Doctor View A4 Report
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Utility classes (active in both screen + print) ── */
+.avoid-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.page-break {
+  break-before: page;
+  page-break-before: always;
+}
+
+.no-print {
+  /* Visible on screen; hidden in @media print below */
+  display: revert;
+}
+
+@media print {
+
+  /* ── 1. A4 page setup ─────────────────────────────────────── */
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    width: 210mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ── 2. Hide everything; then reveal only the report ─────── */
+  body>* {
+    visibility: hidden !important;
+  }
+
+  /* The Next.js app shell wraps everything — blast it all hidden */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Reveal the report and all its children */
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+  }
+
+  /* ── 3. Position & size the report container ──────────────── */
+  .print-area {
+    /* Take over the full page */
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: 186mm !important;
+    /* A4 minus 2×12mm margins */
+    /* Kill scroll container */
+    overflow: visible !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    /* Clean background */
+    background: white !important;
+    /* Padding handled by @page margin — zero here avoids double-spacing */
+    padding: 0 !important;
+    /* Remove any flex quirks that clip content */
+    display: block !important;
+    /* Remove decorative shadows/borders */
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* ── 4. Cards & sections — reset decorative properties ────── */
+  .print-area [style*="box-shadow"],
+  .print-area [style*="boxShadow"] {
+    box-shadow: none !important;
+  }
+
+  /* Remove sticky/fixed elements inside report */
+  .print-area [style*="position: sticky"],
+  .print-area [style*="position: fixed"] {
+    position: static !important;
+  }
+
+  /* ── 5. Charts — prevent overflow & cropping ──────────────── */
+  .print-area canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .print-area svg {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Recharts ResponsiveContainer uses an absolute-positioned inner div */
+  .print-area .recharts-wrapper,
+  .print-area .recharts-surface {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* ── 6. Typography ────────────────────────────────────────── */
+  .print-area * {
+    font-family: 'Inter', system-ui, sans-serif !important;
+  }
+
+  /* ── 7. Hide non-report UI elements ──────────────────────── */
+  .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Hide PDF export overlay */
+  [data-pdf-exclude="true"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* ── 8. Page-break utilities (reinforced) ─────────────────── */
+  .avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .page-break {
+    break-before: page !important;
+    page-break-before: always !important;
+    margin-top: 0 !important;
+  }
+
+  /* ── 9. Spacing between cards in print ────────────────────── */
+  .print-area>*+* {
+    margin-top: 10px;
+  }
+}

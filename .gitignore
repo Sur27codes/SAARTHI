@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Next.js
+web/.next/
+web/out/
+web/.vercel/
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+**/venv/
+*.egg
+
+# Environment files
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML models / data — tracked models are in Saarthi/models/
+*.joblib
+*.csv
+*.h5
+web/tsconfig.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
